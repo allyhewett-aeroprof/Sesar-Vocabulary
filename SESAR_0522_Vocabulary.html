@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SESAR 0522 Vocabulary — Flow-based ATFCM</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0D1F3C;
+    --violet: #5B21B6;
+    --purple: #7C3AED;
+    --ltpurp: #E8D5F5;
+    --cream:  #F7F5FC;
+    --white:  #FFFFFF;
+    --gold:   #D97706;
+    --gray:   #64748B;
+    --dkgray: #2D3748;
+    --border: #E2E8F0;
+    --orange: #D4631A;
+    --teal:   #0D9488;
+    --cat-atm:    #0D9488;
+    --cat-sesar:  #5B21B6;
+    --cat-ops:    #D4631A;
+    --cat-tech:   #1D4ED8;
+    --cat-policy: #15803D;
+    --cat-perf:   #B45309;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'DM Sans',sans-serif; background:var(--navy); color:var(--dkgray); min-height:100vh; }
+
+  header { background:linear-gradient(135deg,#0D1F3C 0%,#1a1060 60%,#0D1F3C 100%); padding:36px 40px 28px; position:relative; overflow:hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:280px; height:280px; border-radius:50%; background:rgba(124,58,237,0.18); }
+  header::after  { content:''; position:absolute; bottom:-40px; left:30%; width:180px; height:180px; border-radius:50%; background:rgba(13,148,136,0.12); }
+  .solution-badge { display:inline-block; background:var(--violet); color:white; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:14px; letter-spacing:1px; }
+  .header-tag { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:3px; color:var(--teal); text-transform:uppercase; margin-bottom:10px; }
+  header h1 { font-family:'Space Mono',monospace; font-size:clamp(20px,3vw,34px); color:#fff; font-weight:700; line-height:1.2; margin-bottom:8px; }
+  header h1 span { color:var(--gold); }
+  header p { color:#94A3B8; font-size:14px; font-weight:300; max-width:520px; }
+  .header-stats { display:flex; gap:20px; margin-top:18px; flex-wrap:wrap; }
+  .stat-pill { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:6px 16px; font-family:'Space Mono',monospace; font-size:11px; color:#CBD5E1; }
+  .stat-pill b { color:var(--gold); }
+
+  .tabs { display:flex; background:#08112a; padding:0 40px; border-bottom:1px solid rgba(255,255,255,0.06); overflow-x:auto; }
+  .tab { padding:14px 22px; font-size:13px; font-weight:500; color:#64748B; cursor:pointer; white-space:nowrap; border-bottom:3px solid transparent; transition:all 0.2s; user-select:none; }
+  .tab:hover { color:#94A3B8; }
+  .tab.active { color:#fff; border-bottom-color:var(--violet); }
+
+  main { background:var(--cream); min-height:calc(100vh - 200px); }
+  .panel { display:none; padding:32px 40px 60px; }
+  .panel.active { display:block; }
+
+  .controls { display:flex; gap:12px; margin-bottom:28px; flex-wrap:wrap; align-items:center; }
+  .search-wrap { position:relative; flex:1; min-width:220px; }
+  .search-wrap input { width:100%; padding:10px 16px 10px 40px; border:2px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:14px; background:white; color:var(--dkgray); transition:border 0.2s; }
+  .search-wrap input:focus { outline:none; border-color:var(--violet); }
+  .search-wrap::before { content:'⌕'; position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:18px; color:var(--gray); pointer-events:none; }
+  .filter-btns { display:flex; gap:6px; flex-wrap:wrap; }
+  .filter-btn { padding:7px 13px; border-radius:20px; border:2px solid; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'DM Sans',sans-serif; white-space:nowrap; background:white; }
+  .filter-btn.active,.filter-btn:hover { color:white !important; }
+
+  .glossary-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+  .term-card { background:white; border-radius:12px; border:1px solid var(--border); padding:20px; transition:all 0.2s; position:relative; overflow:hidden; }
+  .term-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(13,31,60,0.1); }
+  .term-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; }
+  .cat-badge { display:inline-block; padding:3px 9px; border-radius:4px; font-size:10px; font-family:'Space Mono',monospace; font-weight:700; letter-spacing:0.5px; margin-bottom:10px; text-transform:uppercase; }
+  .term-name { font-family:'Space Mono',monospace; font-size:15px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+  .term-full { font-size:11px; color:var(--gray); font-style:italic; margin-bottom:10px; font-weight:300; }
+  .term-def { font-size:13.5px; color:var(--dkgray); line-height:1.6; font-weight:300; }
+  .term-context { margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); font-size:12px; color:var(--gray); font-style:italic; }
+  .no-results { grid-column:1/-1; text-align:center; padding:60px; color:var(--gray); font-size:15px; }
+
+  .flashcard-area { max-width:620px; margin:0 auto; }
+  .fc-controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:10px; }
+  .fc-progress { font-family:'Space Mono',monospace; font-size:13px; color:var(--gray); }
+  .fc-progress b { color:var(--navy); }
+  .fc-filter-sel { padding:8px 14px; border:2px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--dkgray); background:white; cursor:pointer; }
+  .flashcard { perspective:1000px; height:340px; cursor:pointer; margin-bottom:24px; }
+  .flashcard-inner { position:relative; width:100%; height:100%; transition:transform 0.55s cubic-bezier(0.4,0,0.2,1); transform-style:preserve-3d; }
+  .flashcard.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .card-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; padding:36px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+  .card-front { background:linear-gradient(135deg,#0D1F3C 0%,#1a1060 100%); box-shadow:0 20px 60px rgba(13,31,60,0.3); }
+  .card-front .fc-cat { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; opacity:0.7; color:#94A3B8; }
+  .card-front .fc-term { font-family:'Space Mono',monospace; font-size:clamp(22px,4vw,34px); font-weight:700; color:white; margin-bottom:8px; line-height:1.2; }
+  .card-front .fc-abbr { font-size:13px; color:var(--gold); font-style:italic; font-weight:300; }
+  .card-front .fc-hint { margin-top:24px; font-size:12px; color:#475569; font-family:'Space Mono',monospace; }
+  .card-back { background:white; border:2px solid var(--border); box-shadow:0 20px 60px rgba(13,31,60,0.15); transform:rotateY(180deg); }
+  .card-back .fc-def { font-size:14px; color:var(--dkgray); line-height:1.7; font-weight:300; margin-bottom:16px; }
+  .card-back .fc-ctx { font-size:12px; color:var(--gray); font-style:italic; padding-top:12px; border-top:1px dashed var(--border); }
+  .fc-nav { display:flex; gap:12px; justify-content:center; }
+  .btn { padding:11px 24px; border-radius:8px; border:none; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .btn-primary { background:var(--violet); color:white; }
+  .btn-primary:hover { background:var(--purple); transform:translateY(-1px); }
+  .btn-secondary { background:white; color:var(--navy); border:2px solid var(--border); }
+  .btn-secondary:hover { border-color:var(--violet); color:var(--violet); }
+  .btn-sm { padding:7px 16px; font-size:12px; }
+  .fc-dots { display:flex; justify-content:center; gap:6px; margin-top:16px; flex-wrap:wrap; }
+  .fc-dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .fc-dot.active { background:var(--violet); transform:scale(1.3); }
+  .fc-dot.seen { background:var(--teal); }
+
+  .quiz-area { max-width:680px; margin:0 auto; }
+  .quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+  .quiz-score { font-family:'Space Mono',monospace; font-size:28px; font-weight:700; color:var(--navy); }
+  .quiz-score span { font-size:14px; color:var(--gray); font-weight:400; }
+  .progress-bar-wrap { width:100%; height:6px; background:var(--border); border-radius:3px; margin-bottom:28px; overflow:hidden; }
+  .progress-bar { height:100%; background:var(--violet); border-radius:3px; transition:width 0.4s ease; }
+  .quiz-q { background:white; border-radius:16px; border:1px solid var(--border); padding:32px; margin-bottom:20px; }
+  .q-num { font-family:'Space Mono',monospace; font-size:11px; color:var(--gray); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+  .q-text { font-size:17px; font-weight:500; color:var(--navy); line-height:1.5; margin-bottom:8px; }
+  .q-instruction { font-size:12px; color:var(--gray); font-style:italic; }
+  .quiz-options { display:grid; gap:10px; margin-top:20px; }
+  .quiz-opt { padding:14px 18px; border-radius:10px; border:2px solid var(--border); background:white; font-size:13.5px; color:var(--dkgray); cursor:pointer; text-align:left; transition:all 0.15s; font-family:'DM Sans',sans-serif; font-weight:300; line-height:1.5; }
+  .quiz-opt:hover:not(:disabled) { border-color:var(--violet); color:var(--navy); background:#F5F3FF; }
+  .quiz-opt.correct { border-color:#15803D !important; background:#DCFCE7 !important; color:#15803D !important; font-weight:500; }
+  .quiz-opt.wrong { border-color:#DC2626 !important; background:#FEE2E2 !important; color:#DC2626 !important; }
+  .quiz-opt.reveal { border-color:#15803D !important; background:#DCFCE7 !important; color:#15803D !important; opacity:0.7; }
+  .quiz-opt:disabled { cursor:default; }
+  .feedback-bar { padding:14px 20px; border-radius:10px; font-size:14px; font-weight:500; display:none; margin-top:12px; line-height:1.5; }
+  .feedback-bar.correct { background:#DCFCE7; color:#15803D; display:block; }
+  .feedback-bar.wrong { background:#FEE2E2; color:#DC2626; display:block; }
+  .quiz-complete { text-align:center; padding:48px 32px; background:white; border-radius:20px; display:none; }
+  .quiz-complete.show { display:block; }
+  .score-big { font-family:'Space Mono',monospace; font-size:72px; font-weight:700; color:var(--navy); line-height:1; }
+  .score-label { font-size:16px; color:var(--gray); margin:8px 0 24px; }
+  .medal { font-size:64px; margin-bottom:12px; }
+
+  .term-card.cat-atm::before    { background:var(--cat-atm); }
+  .term-card.cat-sesar::before  { background:var(--cat-sesar); }
+  .term-card.cat-ops::before    { background:var(--cat-ops); }
+  .term-card.cat-tech::before   { background:var(--cat-tech); }
+  .term-card.cat-policy::before { background:var(--cat-policy); }
+  .term-card.cat-perf::before   { background:var(--cat-perf); }
+  .cat-badge.cat-atm    { background:#CCFBF1; color:var(--cat-atm); }
+  .cat-badge.cat-sesar  { background:#EDE9FE; color:var(--cat-sesar); }
+  .cat-badge.cat-ops    { background:#FFEDD5; color:var(--cat-ops); }
+  .cat-badge.cat-tech   { background:#DBEAFE; color:var(--cat-tech); }
+  .cat-badge.cat-policy { background:#DCFCE7; color:var(--cat-policy); }
+  .cat-badge.cat-perf   { background:#FEF3C7; color:var(--cat-perf); }
+  .filter-btn.cat-atm    { border-color:var(--cat-atm);    color:var(--cat-atm); }
+  .filter-btn.cat-sesar  { border-color:var(--cat-sesar);  color:var(--cat-sesar); }
+  .filter-btn.cat-ops    { border-color:var(--cat-ops);    color:var(--cat-ops); }
+  .filter-btn.cat-tech   { border-color:var(--cat-tech);   color:var(--cat-tech); }
+  .filter-btn.cat-policy { border-color:var(--cat-policy); color:var(--cat-policy); }
+  .filter-btn.cat-perf   { border-color:var(--cat-perf);   color:var(--cat-perf); }
+  .filter-btn.active.cat-atm    { background:var(--cat-atm); }
+  .filter-btn.active.cat-sesar  { background:var(--cat-sesar); }
+  .filter-btn.active.cat-ops    { background:var(--cat-ops); }
+  .filter-btn.active.cat-tech   { background:var(--cat-tech); }
+  .filter-btn.active.cat-policy { background:var(--cat-policy); }
+  .filter-btn.active.cat-perf   { background:var(--cat-perf); }
+
+  @media(max-width:600px){ header,.panel{padding:20px;} .tabs{padding:0 20px;} .tab{padding:12px 14px;font-size:12px;} }
+</style>
+</head>
+<body>
+<header>
+  <div class="solution-badge">SJU REF: 0522 · FLOW-BASED ATFCM AIRSPACE MANAGEMENT</div>
+  <div class="header-tag">ENAC ISESA · Future ATM Technologies</div>
+  <h1>Key Vocabulary<br><span>Solution 0522</span></h1>
+  <p>Master the terminology behind Flow-based ATFCM — the shift from fixed geographic sectors to dynamic, flow-centric airspace management. ENAC is a named research partner in this solution.</p>
+  <div class="header-stats">
+    <div class="stat-pill"><b id="total-count">0</b> terms</div>
+    <div class="stat-pill"><b>6</b> categories</div>
+    <div class="stat-pill">TRL <b>0</b> · Early Research</div>
+    <div class="stat-pill">Capacity on <b>Demand</b></div>
+  </div>
+</header>
+<div class="tabs">
+  <div class="tab active" onclick="showPanel('glossary',this)">📖 Glossary</div>
+  <div class="tab" onclick="showPanel('flashcards',this)">🃏 Flashcards</div>
+  <div class="tab" onclick="showPanel('quiz',this)">✏️ Quiz</div>
+</div>
+<main>
+  <div class="panel active" id="panel-glossary">
+    <div class="controls">
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Search terms, abbreviations, definitions…" oninput="filterGlossary()">
+      </div>
+      <div class="filter-btns">
+        <button class="filter-btn active" style="border-color:#334155;color:#334155;" data-cat="all" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn cat-atm"    data-cat="atm"    onclick="setFilter('atm',this)">ATM Core</button>
+        <button class="filter-btn cat-sesar"  data-cat="sesar"  onclick="setFilter('sesar',this)">SESAR Process</button>
+        <button class="filter-btn cat-ops"    data-cat="ops"    onclick="setFilter('ops',this)">Operations</button>
+        <button class="filter-btn cat-tech"   data-cat="tech"   onclick="setFilter('tech',this)">Technology</button>
+        <button class="filter-btn cat-policy" data-cat="policy" onclick="setFilter('policy',this)">Policy</button>
+        <button class="filter-btn cat-perf"   data-cat="perf"   onclick="setFilter('perf',this)">Performance</button>
+      </div>
+    </div>
+    <div class="glossary-grid" id="glossary-grid"></div>
+  </div>
+  <div class="panel" id="panel-flashcards">
+    <div class="flashcard-area">
+      <div class="fc-controls">
+        <div class="fc-progress">Card <b id="fc-num">1</b> of <b id="fc-total">0</b></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select class="fc-filter-sel" id="fc-cat-filter" onchange="initFlashcards()">
+            <option value="all">All categories</option>
+            <option value="atm">ATM Core</option>
+            <option value="sesar">SESAR Process</option>
+            <option value="ops">Operations</option>
+            <option value="tech">Technology</option>
+            <option value="policy">Policy</option>
+            <option value="perf">Performance</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="shuffleCards()">⇄ Shuffle</button>
+        </div>
+      </div>
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-inner">
+          <div class="card-face card-front">
+            <div class="fc-cat" id="fc-cat-label"></div>
+            <div class="fc-term" id="fc-term"></div>
+            <div class="fc-abbr" id="fc-abbr"></div>
+            <div class="fc-hint">tap to reveal definition</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="fc-def" id="fc-def"></div>
+            <div class="fc-ctx" id="fc-ctx"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-nav">
+        <button class="btn btn-secondary" onclick="prevCard()">← Previous</button>
+        <button class="btn btn-primary" onclick="nextCard()">Next →</button>
+      </div>
+      <div class="fc-dots" id="fc-dots"></div>
+    </div>
+  </div>
+  <div class="panel" id="panel-quiz">
+    <div class="quiz-area">
+      <div id="quiz-start" style="text-align:center;padding:40px 20px;">
+        <div style="font-size:56px;margin-bottom:16px;">✏️</div>
+        <h2 style="font-family:'Space Mono',monospace;font-size:22px;color:var(--navy);margin-bottom:12px;">Test Your Knowledge</h2>
+        <p style="color:var(--gray);margin-bottom:28px;font-size:15px;">10 questions on Solution 0522 vocabulary — the language of future flow-centric ATM.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="startQuiz('all')">Start Full Quiz</button>
+          <button class="btn btn-secondary" onclick="startQuiz('tech')">Technology only</button>
+          <button class="btn btn-secondary" onclick="startQuiz('ops')">Operations only</button>
+        </div>
+      </div>
+      <div id="quiz-main" style="display:none;">
+        <div class="quiz-header">
+          <div>
+            <div style="font-size:11px;color:var(--gray);font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Score</div>
+            <div class="quiz-score" id="quiz-score-disp">0 <span>/ 10</span></div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="resetQuiz()">✕ Exit</button>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar" id="quiz-progress-bar" style="width:0%"></div></div>
+        <div class="quiz-q">
+          <div class="q-num" id="q-num-label"></div>
+          <div class="q-text" id="q-text"></div>
+          <div class="q-instruction">Choose the best answer</div>
+          <div class="quiz-options" id="quiz-options"></div>
+          <div class="feedback-bar" id="feedback-bar"></div>
+        </div>
+        <div style="text-align:right;">
+          <button class="btn btn-primary" id="quiz-next-btn" onclick="nextQuestion()" style="display:none;">Next question →</button>
+        </div>
+      </div>
+      <div class="quiz-complete" id="quiz-complete">
+        <div class="medal" id="quiz-medal"></div>
+        <div class="score-big" id="quiz-final-score"></div>
+        <div class="score-label">out of 10</div>
+        <div id="quiz-message" style="font-size:15px;color:var(--dkgray);margin-bottom:28px;line-height:1.6;"></div>
+        <button class="btn btn-primary" onclick="startQuiz('all')" style="margin-right:10px;">Try Again</button>
+        <button class="btn btn-secondary" onclick="resetQuiz()">Back</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+const TERMS = [
+  // ATM CORE
+  { id:'atfcm', abbr:'ATFCM', name:'Air Traffic Flow & Capacity Management', cat:'atm',
+    def:'The function ensuring air traffic flows within the capacity of the ATM system, preventing sector saturation. Works at strategic (weeks ahead), pre-tactical (day before), and tactical (same day) phases.',
+    ctx:'The entire system that Solution 0522 aims to transform — from sector-based to flow-based. Understanding today\'s ATFCM is essential to explaining why 0522 is needed.' },
+  { id:'atm', abbr:'ATM', name:'Air Traffic Management', cat:'atm',
+    def:'The aggregation of airborne and ground-based functions ensuring safe and efficient movement of aircraft. Encompasses ATC, airspace management (ASM), and air traffic flow management (ATFM).',
+    ctx:'The overarching system. Solution 0522 proposes a fundamental change to one of its three pillars — ATFM — by making it flow-centric rather than sector-centric.' },
+  { id:'acc', abbr:'ACC', name:'Area Control Centre', cat:'atm',
+    def:'A facility providing ATC services in controlled en-route airspace. Europe has approximately 65 ACCs across 43 ECAC states, each managing a defined block of sectors.',
+    ctx:'Each ACC manages fixed geographic sectors. Solution 0522 challenges this architecture — in a flow-centric world, the ACC\'s role evolves from sector manager to flow manager.' },
+  { id:'asm', abbr:'ASM', name:'Airspace Management', cat:'atm',
+    def:'A planning function maximising utilisation of available airspace by dynamic time-sharing and, at times, segregation between categories of airspace users. Closely linked to ATFM.',
+    ctx:'The "AM" in ATFCM. Solution 0522 proposes dynamic airspace management — where airspace structure adapts to traffic flows rather than following fixed sector boundaries.' },
+  { id:'fir', abbr:'FIR', name:'Flight Information Region', cat:'atm',
+    def:'An airspace of defined dimensions within which flight information and alerting services are provided. Each FIR is assigned to a national ANSP. Europe\'s fragmented FIR structure is a key constraint on network efficiency.',
+    ctx:'FIR boundaries create the national fragmentation that Solution 0522 aims to overcome. Flow-based ATM does not stop at FIR borders — flows cross them freely.' },
+  { id:'ecac', abbr:'ECAC', name:'European Civil Aviation Conference', cat:'atm',
+    def:'An inter-governmental organisation of 44 member states committed to harmonising European civil aviation. Larger than the EU — includes Turkey, Norway, Ukraine, and others.',
+    ctx:'The geographic scope of the European ATM system. The 43 ECAC states and their 65 ACCs constitute the fragmented airspace that Solution 0522\'s flow-based approach must span.' },
+
+  // SESAR PROCESS
+  { id:'trl', abbr:'TRL', name:'Technology Readiness Level', cat:'sesar',
+    def:'A scale from 0–9 measuring technology maturity. TRL 0 = concept formulated; TRL 6 = live environment validated; TRL 9 = fully operational. Solution 0522 is at TRL 0 — the research is just starting.',
+    ctx:'Critical for understanding 0522. At TRL 0 there is no Datapack, no KPIs, no deployable system. The research questions are still being answered by projects like DEEP FLOW.' },
+  { id:'cordis', abbr:'CORDIS', name:'Community Research and Development Information Service', cat:'sesar',
+    def:'The European Commission\'s primary source of information on EU-funded research. Every Horizon Europe grant has a CORDIS page with consortium, budget, objectives, and results.',
+    ctx:'For V0 solutions like 0522, the CORDIS page (Grant ID 101166935 for DEEP FLOW) is the most authoritative primary document — more detailed than the SESAR catalogue page itself.' },
+  { id:'sju', abbr:'SJU', name:'SESAR Joint Undertaking', cat:'sesar',
+    def:'The EU body managing SESAR research and innovation. Now SESAR 3 JU under Horizon Europe. Funds exploratory research (like DEEP FLOW) and industrial research projects that deliver solutions.',
+    ctx:'The organisation funding DEEP FLOW and HYPERSOLVER — the two projects delivering Solution 0522. ENAC is a named partner in both.' },
+  { id:'flagship', abbr:null, name:'SESAR Flagship', cat:'sesar',
+    def:'One of nine thematic research clusters in SESAR 3 JU. Each groups related solutions, projects, and objectives. Solution 0522 belongs to the "Capacity on Demand and Dynamic Airspace" flagship.',
+    ctx:'Understanding the flagship gives you the strategic context. The Capacity on Demand flagship aims to make capacity responsive to demand — irrespective of controller location or national boundaries.' },
+  { id:'exploratory', abbr:null, name:'Exploratory Research', cat:'sesar',
+    def:'The earliest category of SESAR research — blue-sky, fundamental science with no guaranteed application. Funded 100% by EU (no industry co-funding required). DEEP FLOW is classified as exploratory research.',
+    ctx:'Knowing a project is "exploratory" tells you it is at the frontier of knowledge — results are not guaranteed. This is why 0522 has no Datapack: the research is still happening.' },
+  { id:'industrial', abbr:null, name:'Industrial Research', cat:'sesar',
+    def:'Applied SESAR research closer to deployment, co-funded by industry. Builds on exploratory research results to develop validated, deployable solutions. Solutions like 0532 went through industrial research to reach V3/TRL6.',
+    ctx:'The pathway that Solution 0522 must travel after DEEP FLOW delivers results. Exploratory → Industrial → Validation → Deployment.' },
+
+  // OPERATIONS
+  { id:'sector', abbr:null, name:'ATC Sector', cat:'ops',
+    def:'A defined volume of controlled airspace managed by one or more controllers. Has a Maximum Sector Capacity (MSC). Traffic must be regulated to stay within MSC limits.',
+    ctx:'The fundamental unit of today\'s ATM system — and the unit that Solution 0522 proposes to replace with flow-based management. In flow-centric ATM, sectors become dynamic rather than fixed.' },
+  { id:'atfmreg', abbr:null, name:'ATFM Regulation', cat:'ops',
+    def:'A traffic management measure implemented when demand for a sector or airport is expected to exceed capacity. Results in CTOT slots for affected flights. Can be pre-tactical (issued the day before) or tactical (same day).',
+    ctx:'The blunt instrument of today\'s ATFCM. Solution 0522 aims to make regulations more precise and flow-targeted — regulating only the specific flows causing congestion, not all traffic in a sector.' },
+  { id:'flowmerge', abbr:null, name:'Flow Merge / Flow Split', cat:'ops',
+    def:'Dynamic flow management strategies where multiple converging traffic flows are merged into one managed stream (merge) or a single flow is divided to distribute traffic across available routes (split). Core operational concepts in Solution 0522.',
+    ctx:'These are the key operational interventions enabled by the flow configuration module in Solution 0522. Instead of regulating a sector, controllers manage the flow itself.' },
+  { id:'dcb', abbr:'DCB', name:'Demand-Capacity Balancing', cat:'ops',
+    def:'The process of matching air traffic demand to available ATC capacity through route options, flight levels, and flow regulations. Performed at strategic, pre-tactical, and tactical phases.',
+    ctx:'Solution 0522 fundamentally changes how DCB works: moving from sector-based demand assessment (how many aircraft enter sector X?) to flow-based demand prediction (what is the rate of flow Y?).' },
+  { id:'ctot', abbr:'CTOT', name:'Calculated Take-Off Time', cat:'ops',
+    def:'The slot time issued by the NM to a flight requiring ATFM regulation. The aircraft must take off within ±5 minutes of its CTOT. The main ATFM control mechanism today.',
+    ctx:'In flow-based ATM, CTOT may be replaced or supplemented by flow-level controls — regulating the entry rate of a flow rather than individual flights.' },
+  { id:'stam', abbr:'STAM', name:'Short-Term ATFM Measures', cat:'ops',
+    def:'Tactical ATFM tools applied in the last 2 hours before a flight enters a regulated area. Includes miles-in-trail, level capping, and re-routing. SESAR Solution 0411 delivered enhanced STAMs.',
+    ctx:'STAMs are the current state-of-the-art tactical tool. Solution 0522 aims to make future regulations smarter than STAMs by predicting and managing at flow level before regulations are even needed.' },
+
+  // TECHNOLOGY
+  { id:'ml', abbr:'ML', name:'Machine Learning', cat:'tech',
+    def:'A subset of AI in which algorithms learn patterns from data without explicit programming. Used in Solution 0522 for flow pattern extraction, flow prediction, and congestion assessment.',
+    ctx:'Core technology in the DEEP FLOW project. ML enables the system to identify flow patterns automatically from historical radar data and predict their evolution.' },
+  { id:'drl', abbr:'DRL', name:'Deep Reinforcement Learning', cat:'tech',
+    def:'A machine learning technique where an AI agent learns optimal decisions by receiving rewards in a simulated environment. The HYPERSOLVER project (ENAC partner) uses DRL to create an AI controller for simultaneous ATFM and ATC management.',
+    ctx:'The most advanced AI approach in Solution 0522\'s ecosystem. ENAC researchers at the lab are actively working on DRL-based ATM solvers as part of the HYPERSOLVER project.' },
+  { id:'4dtraj', abbr:'4D Trajectory', name:'Four-Dimensional Trajectory', cat:'tech',
+    def:'A complete description of an aircraft\'s path using four dimensions: latitude, longitude, altitude, and time. Enables precise prediction of where every aircraft will be at every moment.',
+    ctx:'The data foundation for flow-based ATFCM. You cannot extract meaningful flow patterns without accurate 4D trajectory data for every flight.' },
+  { id:'epp', abbr:'EPP', name:'Extended Projected Profile', cat:'tech',
+    def:'The most detailed trajectory data form, downlinked from the aircraft\'s FMS. Includes planned altitude and speed changes at every waypoint — the most accurate picture of aircraft intent available.',
+    ctx:'EPP data is the input that makes Solution 0522\'s flow prediction module most powerful. Better trajectory intent = better flow forecasting = earlier, more precise interventions.' },
+  { id:'swim', abbr:'SWIM', name:'System Wide Information Management', cat:'tech',
+    def:'Standards, infrastructure and governance enabling seamless, secure ATM data exchange between all stakeholders. The common digital language for European aviation.',
+    ctx:'SWIM is the data infrastructure that Solution 0522 relies on. Flow data, trajectory data, and capacity data must all flow freely between ANSPs, NM, and airlines for flow-based ATM to work.' },
+  { id:'deepflow', abbr:'DEEP FLOW', name:'Dynamic Air Traffic Flow Configuration', cat:'tech',
+    def:'The SESAR 3 JU exploratory research project (Grant 101166935) directly delivering Solution 0522. Partners: CRIDA (lead), ENAC, EUROCONTROL, INGENUITY IO, LFV, Nanyang Technological University. Duration: Sept 2024 – Feb 2027.',
+    ctx:'This is the project building Solution 0522. ENAC contributes to the flow pattern extraction and flow prediction modules. Budget: €1,431,029, 100% EU funded.' },
+  { id:'hypersolver', abbr:'HYPERSOLVER', name:'AI Holistic Solver for ATFM and ATC', cat:'tech',
+    def:'A companion SESAR research project using Deep Reinforcement Learning to create an AI that simultaneously solves ATFM and ATC constraints. Partners include NeoMetSys, EUROCONTROL, ENAC, LFV, NTU, University of Warwick.',
+    ctx:'ENAC is a named partner in HYPERSOLVER. Researchers here are building the AI decision-making layer that could one day underpin flow-based ATFCM operations.' },
+
+  // POLICY
+  { id:'des', abbr:'DES', name:'Digital European Sky', cat:'policy',
+    def:'The SESAR 3 JU\'s strategic vision for the future ATM system — digitalised, connected, and sustainable, serving all airspace users at all altitudes. The successor concept to the Single European Sky.',
+    ctx:'Solution 0522 is a direct building block of the Digital European Sky. Flow-based management is one of the defining features of DES — airspace that responds to traffic, not the other way around.' },
+  { id:'horizoneurope', abbr:null, name:'Horizon Europe', cat:'policy',
+    def:'The EU\'s 2021–2027 research and innovation programme with a €95.5 billion budget. SESAR 3 JU is an Institutional Partnership under Horizon Europe. DEEP FLOW is funded 100% by Horizon Europe.',
+    ctx:'The funding source for Solution 0522\'s research. This is why DEEP FLOW has a CORDIS page — it is a Horizon Europe grant. European taxpayers are funding this research through this programme.' },
+  { id:'ses', abbr:'SES', name:'Single European Sky', cat:'policy',
+    def:'EU initiative to reform European airspace architecture, replacing 27 national systems with a unified airspace based on operational need rather than national borders. Established 2004.',
+    ctx:'The political foundation for SESAR. Solution 0522\'s flow-centric approach directly supports SES objectives by transcending national sector boundaries.' },
+  { id:'capdem', abbr:null, name:'Capacity on Demand Flagship', cat:'policy',
+    def:'One of nine SESAR 3 JU flagship areas. Goal: access airspace capacity when and where needed, with flexible resource allocation in response to demand — regardless of controller location. Includes dynamic reconfiguration and cross-border capacity-on-demand.',
+    ctx:'The strategic home of Solution 0522. When presenting this solution, always anchor it to this flagship objective — it explains WHY the flow-based approach matters at a policy level.' },
+
+  // PERFORMANCE
+  { id:'msc', abbr:'MSC', name:'Maximum Sector Capacity', cat:'perf',
+    def:'The declared maximum number of aircraft that can simultaneously be in a sector without exceeding safe workload limits for the controlling team. Fixed in advance, declared seasonally.',
+    ctx:'MSC is the capacity concept Solution 0522 proposes to supersede. In flow-based ATM, capacity is not declared for a fixed sector — it is dynamically assessed for each flow.' },
+  { id:'flowrate', abbr:null, name:'Flow Entry Rate', cat:'perf',
+    def:'The number of aircraft entering a defined airspace or flow per unit of time (typically per hour). A more operationally meaningful capacity metric than sector count in a flow-centric system.',
+    ctx:'One of the new performance metrics that Solution 0522\'s framework introduces. Instead of asking "how many aircraft are in sector X?", flow-based ATM asks "what is the entry rate of flow Y?".' },
+  { id:'atfmdelay', abbr:null, name:'ATFM Delay', cat:'perf',
+    def:'Delay assigned by the NM through CTOT slot allocation, caused by demand exceeding capacity. Measured in minutes per flight — the main ATFCM performance KPI. Average in Europe: 0.5–3 minutes per flight.',
+    ctx:'No specific ATFM delay target exists for Solution 0522 yet (no Datapack). But the research hypothesis is that flow-based management will significantly reduce both the frequency and severity of ATFM regulations.' },
+  { id:'kpi', abbr:'KPI', name:'Key Performance Indicator', cat:'perf',
+    def:'A quantifiable metric evaluating ATM system or solution performance. EUROCONTROL uses standardised KPIs: safety, capacity, efficiency, environment, cost-effectiveness, and flight efficiency.',
+    ctx:'Solution 0522 has NO KPIs yet — this is a defining feature of a V0/TRL0 solution. The research (DEEP FLOW) will produce the first quantified performance evidence, which will then populate a future CBA.' },
+  { id:'congestion', abbr:null, name:'Flow Congestion', cat:'perf',
+    def:'A state where the rate of aircraft entering a flow or airspace exceeds the capacity to safely manage them, creating delays and inefficiency. One of the six phenomena that Solution 0522\'s framework explicitly measures and predicts.',
+    ctx:'Flow congestion assessment is Module 3 of Solution 0522\'s framework. The goal is to detect congestion before it requires an ATFM regulation — enabling proactive rather than reactive management.' },
+  { id:'tbo', abbr:'TBO', name:'Trajectory-Based Operations', cat:'perf',
+    def:'An ATM concept where traffic management is based on each flight\'s planned and actual 4D trajectory rather than geographic or procedural constraints. The long-term operational concept that both 0532 and 0522 contribute to.',
+    ctx:'Flow-based ATM (0522) is the network-level expression of TBO. If TBO gives you precise knowledge of each trajectory, flow-based ATFCM uses that knowledge to manage the resulting flows intelligently.' },
+];
+
+// ── STATE ──────────────────────────────────────────────────────
+let activeFilter='all', fcDeck=[], fcIndex=0, fcSeen=new Set();
+let quizQuestions=[], quizIndex=0, quizScore=0, quizAnswered=false;
+document.getElementById('total-count').textContent=TERMS.length;
+
+function showPanel(name,tabEl){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  tabEl.classList.add('active');
+  if(name==='flashcards')initFlashcards();
+}
+function catLabel(cat){return{atm:'ATM Core',sesar:'SESAR Process',ops:'Operations',tech:'Technology',policy:'Policy',perf:'Performance'}[cat]||cat;}
+function renderGlossary(terms){
+  const g=document.getElementById('glossary-grid');
+  if(!terms.length){g.innerHTML='<div class="no-results">No terms match. Try a different keyword.</div>';return;}
+  g.innerHTML=terms.map(t=>`
+    <div class="term-card cat-${t.cat}">
+      <span class="cat-badge cat-${t.cat}">${catLabel(t.cat)}</span>
+      <div class="term-name">${t.abbr||t.name}</div>
+      ${t.abbr?`<div class="term-full">${t.name}</div>`:''}
+      <div class="term-def">${t.def}</div>
+      <div class="term-context">📍 ${t.ctx}</div>
+    </div>`).join('');
+}
+function filterGlossary(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  renderGlossary(TERMS.filter(t=>(activeFilter==='all'||t.cat===activeFilter)&&(!q||[t.abbr||'',t.name,t.def,t.ctx].join(' ').toLowerCase().includes(q))));
+}
+function setFilter(cat,btn){activeFilter=cat;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filterGlossary();}
+renderGlossary(TERMS);
+function initFlashcards(){
+  const cat=document.getElementById('fc-cat-filter').value;
+  fcDeck=TERMS.filter(t=>cat==='all'||t.cat===cat);fcIndex=0;fcSeen.clear();
+  document.getElementById('fc-total').textContent=fcDeck.length;
+  renderCard();renderDots();
+}
+function shuffleCards(){for(let i=fcDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcDeck[i],fcDeck[j]]=[fcDeck[j],fcDeck[i]];}fcIndex=0;fcSeen.clear();renderCard();renderDots();}
+function renderCard(){
+  const t=fcDeck[fcIndex];
+  document.getElementById('fc-cat-label').textContent=catLabel(t.cat);
+  document.getElementById('fc-term').textContent=t.abbr||t.name;
+  document.getElementById('fc-abbr').textContent=t.abbr?t.name:'';
+  document.getElementById('fc-def').textContent=t.def;
+  document.getElementById('fc-ctx').textContent='📍 '+t.ctx;
+  document.getElementById('fc-num').textContent=fcIndex+1;
+  document.getElementById('flashcard').classList.remove('flipped');
+  renderDots();
+}
+function renderDots(){
+  const max=Math.min(fcDeck.length,20);
+  document.getElementById('fc-dots').innerHTML=Array.from({length:max},(_,i)=>{let c='fc-dot';if(i===fcIndex)c+=' active';else if(fcSeen.has(i))c+=' seen';return`<div class="${c}"></div>`;}).join('');
+}
+function flipCard(){document.getElementById('flashcard').classList.toggle('flipped');fcSeen.add(fcIndex);renderDots();}
+function nextCard(){fcSeen.add(fcIndex);fcIndex=(fcIndex+1)%fcDeck.length;renderCard();}
+function prevCard(){fcIndex=(fcIndex-1+fcDeck.length)%fcDeck.length;renderCard();}
+function startQuiz(cat){
+  document.getElementById('quiz-start').style.display='none';
+  document.getElementById('quiz-complete').classList.remove('show');
+  document.getElementById('quiz-main').style.display='block';
+  const pool=TERMS.filter(t=>cat==='all'||t.cat===cat);
+  quizQuestions=[...pool].sort(()=>Math.random()-0.5).slice(0,Math.min(10,pool.length)).map(t=>buildQ(t,pool));
+  quizIndex=0;quizScore=0;quizAnswered=false;renderQ();
+}
+function buildQ(t,pool){
+  const type=Math.floor(Math.random()*3);
+  const others=pool.filter(x=>x.id!==t.id).sort(()=>Math.random()-0.5);
+  if(type===0)return{question:`What does <strong>${t.abbr||t.name}</strong> mean?`,correct:t.def,options:sh([t.def,...others.slice(0,3).map(o=>o.def)])};
+  if(type===1&&t.abbr)return{question:`What is the full name of <strong>${t.abbr}</strong>?`,correct:t.name,options:sh([t.name,...others.filter(o=>o.abbr).slice(0,3).map(o=>o.name)])};
+  const words=t.def.split(' ').slice(0,9).join(' ')+'…';
+  return{question:`Which term begins: <em>"${words}"</em>`,correct:t.abbr||t.name,options:sh([t.abbr||t.name,...others.slice(0,3).map(o=>o.abbr||o.name)])};
+}
+function sh(a){return a.sort(()=>Math.random()-0.5);}
+function renderQ(){
+  const q=quizQuestions[quizIndex];quizAnswered=false;
+  document.getElementById('q-num-label').textContent=`Question ${quizIndex+1} of ${quizQuestions.length}`;
+  document.getElementById('q-text').innerHTML=q.question;
+  document.getElementById('feedback-bar').className='feedback-bar';
+  document.getElementById('quiz-next-btn').style.display='none';
+  document.getElementById('quiz-score-disp').innerHTML=`${quizScore} <span>/ ${quizQuestions.length}</span>`;
+  document.getElementById('quiz-progress-bar').style.width=`${(quizIndex/quizQuestions.length)*100}%`;
+  document.getElementById('quiz-options').innerHTML=q.options.map((o,i)=>`<button class="quiz-opt" onclick="answerQ(${i})">${o}</button>`).join('');
+}
+function answerQ(idx){
+  if(quizAnswered)return;quizAnswered=true;
+  const q=quizQuestions[quizIndex];
+  const btns=document.querySelectorAll('.quiz-opt');btns.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('feedback-bar');
+  if(q.options[idx]===q.correct){btns[idx].classList.add('correct');quizScore++;fb.className='feedback-bar correct';fb.textContent='✓ Correct!';}
+  else{btns[idx].classList.add('wrong');q.options.forEach((o,i)=>{if(o===q.correct)btns[i].classList.add('reveal');});fb.className='feedback-bar wrong';fb.textContent=`✗ Correct answer: ${q.correct}`;}
+  document.getElementById('quiz-score-disp').innerHTML=`${quizScore} <span>/ ${quizQuestions.length}</span>`;
+  document.getElementById('quiz-next-btn').style.display='inline-block';
+}
+function nextQuestion(){quizIndex++;if(quizIndex>=quizQuestions.length)showComplete();else renderQ();}
+function showComplete(){
+  document.getElementById('quiz-main').style.display='none';
+  const c=document.getElementById('quiz-complete');c.classList.add('show');
+  const p=quizScore/quizQuestions.length;
+  document.getElementById('quiz-final-score').textContent=quizScore;
+  document.getElementById('quiz-medal').textContent=p===1?'🏆':p>=0.7?'🥇':p>=0.5?'🥈':'📚';
+  document.getElementById('quiz-message').textContent=p===1?'Perfect! You are ready to present Solution 0522 with confidence.':p>=0.7?'Excellent. Review any missed terms in the Glossary.':p>=0.5?'Good progress — use Flashcards to reinforce the terms you missed.':'Keep practising with Flashcard mode, then try again.';
+}
+function resetQuiz(){document.getElementById('quiz-main').style.display='none';document.getElementById('quiz-complete').classList.remove('show');document.getElementById('quiz-start').style.display='block';}
+initFlashcards();
+</script>
+</body>
+</html>
