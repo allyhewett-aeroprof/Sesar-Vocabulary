@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviation Weather Vocabulary</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #0a1628;
+    --sky2: #0d2247;
+    --cloud: #e8f0fe;
+    --ice: #b8d4f0;
+    --gold: #f5c842;
+    --teal: #2dd4bf;
+    --coral: #fb7185;
+    --green: #34d399;
+    --text: #e2eaf8;
+    --muted: #7a9cc7;
+    --card: rgba(255,255,255,0.06);
+    --card-border: rgba(255,255,255,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--sky);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated sky background */
+  body::before {
+    content:'';
+    position:fixed; inset:0; z-index:0;
+    background: radial-gradient(ellipse at 20% 20%, #1a3a6b 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, #0d3a4a 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 0%, #1e2d5a 0%, transparent 60%),
+                var(--sky);
+    pointer-events:none;
+  }
+
+  /* Stars */
+  body::after {
+    content:'';
+    position:fixed; inset:0; z-index:0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 25%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 5%,  rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 35%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5%  60%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 80%, rgba(255,255,255,0.2) 0%, transparent 100%);
+    pointer-events:none;
+  }
+
+  #app { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:20px; }
+
+  /* HEADER */
+  header { text-align:center; padding:40px 0 30px; }
+  .logo {
+    display:inline-flex; align-items:center; gap:12px;
+    background:rgba(255,255,255,0.07); border:1px solid var(--card-border);
+    border-radius:50px; padding:8px 20px; margin-bottom:20px;
+    font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted);
+  }
+  .logo span { font-size:18px; }
+  h1 {
+    font-family:'Syne', sans-serif; font-size:clamp(28px,5vw,48px); font-weight:800;
+    background:linear-gradient(135deg, #fff 0%, var(--ice) 50%, var(--teal) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; line-height:1.1; margin-bottom:10px;
+  }
+  .subtitle { color:var(--muted); font-size:14px; font-weight:300; }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    background:rgba(255,255,255,0.08); border-radius:50px;
+    height:6px; margin:20px 0; overflow:hidden;
+  }
+  .progress-bar-fill {
+    height:100%; border-radius:50px;
+    background:linear-gradient(90deg, var(--teal), var(--gold));
+    transition:width 0.5s ease;
+  }
+  .progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:4px; }
+
+  /* TABS */
+  .tabs {
+    display:flex; gap:6px; justify-content:center;
+    background:rgba(255,255,255,0.05); border-radius:14px;
+    padding:6px; margin-bottom:30px;
+    border:1px solid var(--card-border);
+  }
+  .tab {
+    flex:1; padding:10px 16px; border:none; border-radius:10px;
+    background:transparent; color:var(--muted); font-family:'Inter',sans-serif;
+    font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .tab.active {
+    background:rgba(255,255,255,0.12); color:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  }
+  .tab:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.06); }
+
+  /* SCREENS */
+  .screen { display:none; animation:fadeIn 0.3s ease; }
+  .screen.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── GLOSSARY ────────────────────────────────────────────── */
+  .search-wrap { position:relative; margin-bottom:20px; }
+  .search-wrap input {
+    width:100%; padding:14px 20px 14px 48px;
+    background:rgba(255,255,255,0.08); border:1px solid var(--card-border);
+    border-radius:12px; color:#fff; font-family:'Inter',sans-serif; font-size:15px;
+    outline:none; transition:border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color:var(--teal); }
+  .search-wrap input::placeholder { color:var(--muted); }
+  .search-icon {
+    position:absolute; left:16px; top:50%; transform:translateY(-50%);
+    font-size:18px; pointer-events:none;
+  }
+
+  .filter-pills {
+    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;
+  }
+  .pill {
+    padding:6px 14px; border-radius:50px; font-size:12px; font-weight:500;
+    border:1px solid var(--card-border); background:transparent;
+    color:var(--muted); cursor:pointer; transition:all 0.2s;
+  }
+  .pill.active { background:var(--teal); border-color:var(--teal); color:#000; }
+
+  .word-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+
+  .word-card {
+    background:var(--card); border:1px solid var(--card-border);
+    border-radius:14px; padding:16px; cursor:pointer;
+    transition:all 0.25s; position:relative; overflow:hidden;
+  }
+  .word-card:hover { border-color:var(--teal); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+  .word-card.learned { border-color:rgba(52,211,153,0.4); background:rgba(52,211,153,0.06); }
+  .word-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, var(--teal), var(--gold));
+    opacity:0; transition:opacity 0.2s;
+  }
+  .word-card:hover::before { opacity:1; }
+
+  .word-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+  .word-name { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:#fff; }
+  .word-emoji { font-size:22px; }
+  .word-cat {
+    font-size:10px; text-transform:uppercase; letter-spacing:1.5px;
+    padding:3px 8px; border-radius:50px; margin-bottom:8px; display:inline-block;
+  }
+  .word-def { font-size:13px; color:var(--muted); line-height:1.6; }
+  .word-example {
+    margin-top:8px; font-size:12px; color:var(--teal);
+    font-style:italic; padding-top:8px; border-top:1px solid var(--card-border);
+  }
+  .learned-badge {
+    position:absolute; top:10px; right:10px; font-size:14px;
+    opacity:0; transition:opacity 0.2s;
+  }
+  .word-card.learned .learned-badge { opacity:1; }
+
+  /* ── FLASHCARDS ─────────────────────────────────────────── */
+  .fc-wrap { perspective:1000px; }
+  .fc-progress { text-align:center; margin-bottom:20px; color:var(--muted); font-size:14px; }
+  .fc-card-container {
+    perspective:1000px; cursor:pointer; margin:0 auto 24px;
+    max-width:600px; height:320px;
+  }
+  .fc-card {
+    width:100%; height:100%;
+    position:relative; transform-style:preserve-3d;
+    transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    border-radius:20px;
+  }
+  .fc-card.flipped { transform:rotateY(180deg); }
+  .fc-face {
+    position:absolute; inset:0; border-radius:20px;
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:40px; text-align:center;
+  }
+  .fc-front {
+    background:linear-gradient(135deg, #0d2247 0%, #1a3a6b 100%);
+    border:1px solid rgba(45,212,191,0.3);
+  }
+  .fc-back {
+    transform:rotateY(180deg);
+    background:linear-gradient(135deg, #0a2a1f 0%, #0d3a4a 100%);
+    border:1px solid rgba(52,211,153,0.3);
+  }
+  .fc-emoji { font-size:64px; margin-bottom:16px; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4)); }
+  .fc-word { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#fff; margin-bottom:8px; }
+  .fc-hint { font-size:13px; color:var(--muted); }
+  .fc-def { font-size:17px; color:var(--text); line-height:1.6; margin-bottom:16px; }
+  .fc-example { font-size:13px; color:var(--teal); font-style:italic; }
+  .fc-cat-label {
+    position:absolute; top:16px; left:16px;
+    font-size:10px; text-transform:uppercase; letter-spacing:1.5px;
+    padding:4px 10px; border-radius:50px;
+  }
+
+  .fc-controls { display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
+  .btn {
+    padding:12px 28px; border-radius:12px; border:none; font-family:'Inter',sans-serif;
+    font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary { background:linear-gradient(135deg,var(--teal),#0891b2); color:#000; }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(45,212,191,0.3); }
+  .btn-ghost { background:rgba(255,255,255,0.08); color:var(--text); border:1px solid var(--card-border); }
+  .btn-ghost:hover { background:rgba(255,255,255,0.14); }
+  .btn-know { background:rgba(52,211,153,0.15); color:var(--green); border:1px solid rgba(52,211,153,0.3); }
+  .btn-know:hover { background:rgba(52,211,153,0.25); }
+  .btn-unsure { background:rgba(251,113,133,0.15); color:var(--coral); border:1px solid rgba(251,113,133,0.3); }
+  .btn-unsure:hover { background:rgba(251,113,133,0.25); }
+
+  .fc-shuffle-note { text-align:center; font-size:12px; color:var(--muted); margin-top:12px; }
+
+  /* ── QUIZ ──────────────────────────────────────────────── */
+  .quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .quiz-score-display {
+    background:rgba(245,200,66,0.12); border:1px solid rgba(245,200,66,0.3);
+    border-radius:10px; padding:8px 16px; font-family:'Syne',sans-serif;
+    font-size:18px; font-weight:700; color:var(--gold);
+  }
+  .quiz-q-label { font-size:13px; color:var(--muted); }
+
+  .quiz-question {
+    background:linear-gradient(135deg, rgba(13,34,71,0.8), rgba(26,58,107,0.8));
+    border:1px solid var(--card-border); border-radius:16px;
+    padding:28px; margin-bottom:20px; text-align:center;
+  }
+  .quiz-q-emoji { font-size:48px; margin-bottom:12px; }
+  .quiz-q-text { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:#fff; line-height:1.4; }
+  .quiz-q-sub { font-size:13px; color:var(--muted); margin-top:8px; }
+
+  .quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .quiz-opt {
+    padding:16px 18px; background:rgba(255,255,255,0.06);
+    border:1px solid var(--card-border); border-radius:12px;
+    cursor:pointer; transition:all 0.2s; font-size:14px; line-height:1.5;
+    text-align:left; color:var(--text); font-family:'Inter',sans-serif;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color:var(--teal); background:rgba(45,212,191,0.08); }
+  .quiz-opt.correct { background:rgba(52,211,153,0.2); border-color:var(--green); color:#fff; }
+  .quiz-opt.wrong   { background:rgba(251,113,133,0.2); border-color:var(--coral); color:#fff; }
+  .quiz-opt:disabled { cursor:default; }
+
+  .quiz-feedback {
+    text-align:center; padding:16px; border-radius:12px;
+    font-size:15px; font-weight:500; margin-bottom:16px;
+    display:none;
+  }
+  .quiz-feedback.show { display:block; animation:fadeIn 0.3s ease; }
+  .quiz-feedback.correct { background:rgba(52,211,153,0.15); color:var(--green); border:1px solid rgba(52,211,153,0.3); }
+  .quiz-feedback.wrong   { background:rgba(251,113,133,0.15); color:var(--coral); border:1px solid rgba(251,113,133,0.3); }
+
+  .quiz-modes { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .quiz-mode-btn {
+    padding:8px 16px; border-radius:50px; border:1px solid var(--card-border);
+    background:transparent; color:var(--muted); font-size:12px; cursor:pointer;
+    transition:all 0.2s; font-family:'Inter',sans-serif;
+  }
+  .quiz-mode-btn.active { background:rgba(245,200,66,0.15); border-color:var(--gold); color:var(--gold); }
+
+  /* Results */
+  .results-screen { text-align:center; padding:40px 20px; }
+  .results-emoji { font-size:72px; margin-bottom:20px; }
+  .results-score { font-family:'Syne',sans-serif; font-size:56px; font-weight:800; color:var(--gold); }
+  .results-label { font-size:16px; color:var(--muted); margin-bottom:30px; }
+  .results-breakdown {
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    max-width:400px; margin:0 auto 30px;
+  }
+  .rb-card { background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:16px; }
+  .rb-num { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; }
+  .rb-lbl { font-size:12px; color:var(--muted); }
+
+  /* ── MATCHING ──────────────────────────────────────────── */
+  .match-instructions { text-align:center; font-size:14px; color:var(--muted); margin-bottom:20px; }
+  .match-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .match-col { display:flex; flex-direction:column; gap:8px; }
+  .match-col-label { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:4px; text-align:center; }
+  .match-item {
+    padding:14px 16px; border-radius:12px; border:1px solid var(--card-border);
+    background:rgba(255,255,255,0.05); cursor:pointer; transition:all 0.2s;
+    font-size:13px; min-height:52px; display:flex; align-items:center;
+    user-select:none;
+  }
+  .match-item:hover { border-color:var(--teal); background:rgba(45,212,191,0.08); }
+  .match-item.selected-word { border-color:var(--gold); background:rgba(245,200,66,0.12); color:var(--gold); font-family:'Syne',sans-serif; font-weight:700; }
+  .match-item.selected-def  { border-color:var(--gold); background:rgba(245,200,66,0.08); }
+  .match-item.matched-ok  { border-color:var(--green); background:rgba(52,211,153,0.12); color:var(--green); pointer-events:none; opacity:0.8; }
+  .match-item.matched-bad { border-color:var(--coral); background:rgba(251,113,133,0.12); color:var(--coral); }
+
+  .match-stats { display:flex; gap:16px; justify-content:center; margin-bottom:16px; font-size:14px; }
+  .match-stat { color:var(--muted); }
+  .match-stat strong { color:#fff; }
+
+  /* Category colour helpers */
+  .cat-precip  { background:rgba(45,212,191,0.15);  color:var(--teal); }
+  .cat-wind    { background:rgba(245,200,66,0.15);  color:var(--gold); }
+  .cat-visibility { background:rgba(147,197,253,0.15); color:#93c5fd; }
+  .cat-temp    { background:rgba(167,243,208,0.15); color:#6ee7b7; }
+  .cat-hazard  { background:rgba(251,113,133,0.15); color:var(--coral); }
+  .cat-cloud   { background:rgba(196,181,253,0.15); color:#c4b5fd; }
+
+  /* RESPONSIVE */
+  @media(max-width:600px) {
+    .quiz-options { grid-template-columns:1fr; }
+    .match-grid { grid-template-columns:1fr; }
+    .fc-word { font-size:28px; }
+    .tabs { flex-wrap:wrap; }
+  }
+
+  /* scroll */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
+
+  .empty-state { text-align:center; padding:60px 20px; color:var(--muted); font-size:15px; }
+  .empty-state .e-icon { font-size:48px; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="logo"><span>✈</span> ENAC ISESA</div>
+    <h1>Aviation Weather Vocabulary</h1>
+    <p class="subtitle">32 essential terms · B1 English level · Interactive learning</p>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('glossary')">📖 Glossary</button>
+    <button class="tab" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+    <button class="tab" onclick="switchTab('quiz')">🎯 Quiz</button>
+    <button class="tab" onclick="switchTab('matching')">🔗 Match</button>
+  </div>
+
+  <!-- ══ GLOSSARY ══════════════════════════════════════════ -->
+  <div id="screen-glossary" class="screen active">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search words or definitions…" oninput="filterGlossary()">
+    </div>
+    <div class="filter-pills" id="filter-pills"></div>
+    <div class="progress-label">
+      <span>Words learned</span>
+      <span id="learned-count">0 / 32</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="word-grid" id="word-grid"></div>
+  </div>
+
+  <!-- ══ FLASHCARDS ════════════════════════════════════════ -->
+  <div id="screen-flashcards" class="screen">
+    <div class="fc-progress">
+      Card <span id="fc-current">1</span> of <span id="fc-total">32</span>
+      &nbsp;·&nbsp; <span id="fc-known">0</span> known &nbsp;·&nbsp; <span id="fc-unsure">0</span> to review
+    </div>
+    <div class="fc-card-container" onclick="flipCard()">
+      <div class="fc-card" id="fc-card">
+        <div class="fc-face fc-front">
+          <span class="fc-cat-label" id="fc-cat"></span>
+          <div class="fc-emoji" id="fc-emoji">⛅</div>
+          <div class="fc-word" id="fc-word">BREEZE</div>
+          <div class="fc-hint">Click to see definition</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-def" id="fc-def">A light, gentle wind.</div>
+          <div class="fc-example" id="fc-ex">"There was a pleasant breeze at the airport."</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="btn btn-unsure" onclick="markCard(false)">✗ Still learning</button>
+      <button class="btn btn-ghost" onclick="prevCard()">← Back</button>
+      <button class="btn btn-ghost" onclick="nextCard()">Next →</button>
+      <button class="btn btn-know" onclick="markCard(true)">✓ I know this</button>
+    </div>
+    <div class="fc-shuffle-note">
+      <button class="btn btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:12px" onclick="shuffleCards()">🔀 Shuffle cards</button>
+      <button class="btn btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:12px" onclick="resetFC()">↺ Reset progress</button>
+    </div>
+  </div>
+
+  <!-- ══ QUIZ ══════════════════════════════════════════════ -->
+  <div id="screen-quiz" class="screen">
+    <div id="quiz-setup">
+      <div style="text-align:center;padding:30px 0">
+        <div style="font-size:48px;margin-bottom:16px">🎯</div>
+        <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px">Test Your Knowledge</div>
+        <div style="color:var(--muted);font-size:14px;margin-bottom:30px">Choose a quiz type and test yourself on all 32 words</div>
+        <div class="quiz-modes" style="justify-content:center">
+          <button class="quiz-mode-btn active" onclick="setQuizMode('def-to-word',this)">Definition → Word</button>
+          <button class="quiz-mode-btn" onclick="setQuizMode('word-to-def',this)">Word → Definition</button>
+          <button class="quiz-mode-btn" onclick="setQuizMode('example',this)">Sentence → Word</button>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+          <button class="btn btn-primary" onclick="startQuiz(10)">Quick (10 Qs)</button>
+          <button class="btn btn-primary" onclick="startQuiz(20)">Medium (20 Qs)</button>
+          <button class="btn btn-primary" onclick="startQuiz(32)">Full (32 Qs)</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-game" style="display:none">
+      <div class="quiz-header">
+        <div>
+          <div class="quiz-q-label" id="quiz-q-label">Question 1 of 10</div>
+        </div>
+        <div class="quiz-score-display">⭐ <span id="quiz-score">0</span></div>
+      </div>
+      <div class="progress-bar-wrap" style="margin-bottom:20px">
+        <div class="progress-bar-fill" id="quiz-progress" style="width:0%"></div>
+      </div>
+      <div class="quiz-question">
+        <div class="quiz-q-emoji" id="quiz-emoji">⛅</div>
+        <div class="quiz-q-text" id="quiz-text">Loading…</div>
+        <div class="quiz-q-sub" id="quiz-sub"></div>
+      </div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div style="text-align:center">
+        <button class="btn btn-ghost" id="quiz-next-btn" onclick="nextQuestion()" style="display:none">Next question →</button>
+      </div>
+    </div>
+
+    <div id="quiz-results" style="display:none">
+      <div class="results-screen">
+        <div class="results-emoji" id="results-emoji">🏆</div>
+        <div class="results-score" id="results-score">0/10</div>
+        <div class="results-label" id="results-label">Keep practising!</div>
+        <div class="results-breakdown">
+          <div class="rb-card">
+            <div class="rb-num" style="color:var(--green)" id="rb-correct">0</div>
+            <div class="rb-lbl">Correct</div>
+          </div>
+          <div class="rb-card">
+            <div class="rb-num" style="color:var(--coral)" id="rb-wrong">0</div>
+            <div class="rb-lbl">Wrong</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="resetQuiz()">Try again</button>
+        <button class="btn btn-ghost" style="margin-left:10px" onclick="switchTab('flashcards')">Review flashcards</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MATCHING ══════════════════════════════════════════ -->
+  <div id="screen-matching" class="screen">
+    <div class="match-stats">
+      <span class="match-stat">Matched: <strong id="m-matched">0</strong> / <span id="m-total">10</span></span>
+      <span class="match-stat">Attempts: <strong id="m-attempts">0</strong></span>
+    </div>
+    <p class="match-instructions">Click a word on the left, then its definition on the right. Match all pairs to win!</p>
+    <div class="match-grid">
+      <div class="match-col">
+        <div class="match-col-label">Words</div>
+        <div id="match-words"></div>
+      </div>
+      <div class="match-col">
+        <div class="match-col-label">Definitions</div>
+        <div id="match-defs"></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="newMatchGame()">New Game 🔀</button>
+      <button class="btn btn-ghost" onclick="newMatchGame(true)">Easy Mode (8 pairs)</button>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+const WORDS = [
+  {
+    word:"Breeze", emoji:"🌬️", cat:"wind",
+    def:"A light, gentle wind that is pleasant to feel.",
+    example:"\"There was a light breeze at the airport — good for paragliders.\"",
+    tip:"Think of a nice day with soft wind."
+  },
+  {
+    word:"Build up", emoji:"⛈️", cat:"cloud",
+    def:"When clouds or storms slowly grow bigger and higher in the sky.",
+    example:"\"We can see a storm build up on the radar to the east.\"",
+    tip:"Cumulonimbus clouds 'build up' before a storm."
+  },
+  {
+    word:"Clouds", emoji:"☁️", cat:"cloud",
+    def:"Masses of tiny water droplets or ice crystals that float in the sky.",
+    example:"\"There are scattered clouds at 3,000 feet.\"",
+    tip:"Different cloud types = different weather."
+  },
+  {
+    word:"Crosswind", emoji:"💨", cat:"wind",
+    def:"Wind that blows across the direction of the runway — not along it.",
+    example:"\"The crosswind component was 15 knots on runway 27.\"",
+    tip:"A headwind is better for landing. A crosswind makes it harder."
+  },
+  {
+    word:"Dew point", emoji:"💧", cat:"temp",
+    def:"The temperature at which air becomes so cool that water vapour turns into liquid droplets (fog or dew).",
+    example:"\"Temperature 12°C, dew point 10°C — fog is likely tonight.\"",
+    tip:"When temp = dew point → expect fog or mist."
+  },
+  {
+    word:"Downdraught", emoji:"⬇️", cat:"hazard",
+    def:"A strong, sudden downward movement of cold air — very dangerous near thunderstorms.",
+    example:"\"The aircraft encountered a severe downdraught during approach.\"",
+    tip:"Also called 'downburst'. Dangerous for landing aircraft."
+  },
+  {
+    word:"Drizzle", emoji:"🌧️", cat:"precip",
+    def:"Very fine, light rain — the drops are very small and fall slowly.",
+    example:"\"Visibility reduced to 2km in drizzle and mist.\"",
+    tip:"Lighter than rain. Drops are tiny."
+  },
+  {
+    word:"Flurries", emoji:"❄️", cat:"precip",
+    def:"Short periods of light, gusty snow — not heavy, but can reduce visibility.",
+    example:"\"Snow flurries are expected this afternoon.\"",
+    tip:"Brief and light — not a full snowstorm."
+  },
+  {
+    word:"Fog", emoji:"🌫️", cat:"visibility",
+    def:"Very thick mist — visibility is less than 1,000 metres. Airports can close because of fog.",
+    example:"\"Dense fog at the airport. Visibility below 100 metres.\"",
+    tip:"Officially fog when visibility < 1 km."
+  },
+  {
+    word:"Fogbound", emoji:"🚫", cat:"visibility",
+    def:"Completely stopped or unable to operate because of thick fog.",
+    example:"\"The airport was fogbound for three hours this morning.\"",
+    tip:"Fogbound = cannot move or fly because of fog."
+  },
+  {
+    word:"Gale", emoji:"🌀", cat:"wind",
+    def:"A very strong wind — usually 34–47 knots (Beaufort scale 8). Can cause serious damage.",
+    example:"\"Gale force winds closed the airport.\"",
+    tip:"Gale > strong wind > breeze."
+  },
+  {
+    word:"Gust", emoji:"💨", cat:"wind",
+    def:"A sudden, short burst of fast wind — stronger than the normal wind speed.",
+    example:"\"Wind 250/15, gusting to 28 knots.\"",
+    tip:"Gusts are unpredictable. Important for landing."
+  },
+  {
+    word:"Haze", emoji:"🌫️", cat:"visibility",
+    def:"Reduced visibility caused by tiny dry dust or smoke particles in the air (not water).",
+    example:"\"Visibility 5km in haze. No clouds below 5,000ft.\"",
+    tip:"Haze = dry. Mist = wet. Both reduce visibility."
+  },
+  {
+    word:"Headwind", emoji:"➡️", cat:"wind",
+    def:"Wind blowing directly towards the front of the aircraft — it helps take-off and landing.",
+    example:"\"We had a 20-knot headwind on final approach.\"",
+    tip:"Headwind = helpful. Tailwind = less helpful for landing."
+  },
+  {
+    word:"Jet stream", emoji:"🌊", cat:"wind",
+    def:"A very fast, narrow band of wind very high in the atmosphere (around 30,000–40,000 feet). It can speed up or slow down flights.",
+    example:"\"We used the jet stream and arrived 45 minutes early.\"",
+    tip:"Pilots plan routes to use (or avoid) the jet stream."
+  },
+  {
+    word:"Mild", emoji:"🌤️", cat:"temp",
+    def:"Pleasantly warm — not too hot or too cold. Good flying weather.",
+    example:"\"Mild conditions are expected for the weekend.\"",
+    tip:"Mild = comfortable temperature."
+  },
+  {
+    word:"Mist", emoji:"🌫️", cat:"visibility",
+    def:"Light fog — visibility is between 1,000 and 5,000 metres. Less dangerous than fog.",
+    example:"\"Shallow mist in valleys, clearing by mid-morning.\"",
+    tip:"Mist (1-5km) is less severe than fog (<1km)."
+  },
+  {
+    word:"Moderate", emoji:"⚖️", cat:"precip",
+    def:"Not too strong, not too light — a medium level of weather (used for rain, wind, turbulence).",
+    example:"\"Moderate turbulence expected between FL200 and FL300.\"",
+    tip:"Light → Moderate → Heavy → Severe (in weather intensity)."
+  },
+  {
+    word:"Patch (of fog)", emoji:"🟦", cat:"visibility",
+    def:"A small, localised area of fog — not everywhere, just in one place.",
+    example:"\"Patchy fog in low-lying areas, clearing by 0900Z.\"",
+    tip:"Patches are not everywhere — they appear in specific areas."
+  },
+  {
+    word:"Rime", emoji:"🧊", cat:"hazard",
+    def:"A rough, white layer of ice that forms on aircraft surfaces when they fly through supercooled water droplets.",
+    example:"\"Rime icing reported by aircraft below 8,000ft.\"",
+    tip:"Rime ice forms quickly. It is dangerous to aircraft."
+  },
+  {
+    word:"Scattered", emoji:"🌤️", cat:"cloud",
+    def:"Clouds covering between 3 and 4 oktas (3/8 to 4/8) of the sky — not fully overcast but quite a lot of cloud.",
+    example:"\"Scattered clouds at 2,500ft. Visibility 10km.\"",
+    tip:"FEW < SCT < BKN < OVC (cloud coverage terms)."
+  },
+  {
+    word:"Showers", emoji:"🌦️", cat:"precip",
+    def:"Short periods of rain — they start and stop quickly, not continuous rain.",
+    example:"\"Scattered showers expected in the afternoon.\"",
+    tip:"Showers = brief rain. Rain = continuous rain."
+  },
+  {
+    word:"Sleet", emoji:"🌨️", cat:"precip",
+    def:"Rain and snow mixed together — or partly frozen raindrops. Makes runways slippery.",
+    example:"\"Sleet and snow on the runway — braking action medium.\"",
+    tip:"A mix of rain and snow — dangerous for runways."
+  },
+  {
+    word:"Slush", emoji:"💦", cat:"precip",
+    def:"Wet, partly melted snow on the ground — like thick liquid snow. It can stick to aircraft.",
+    example:"\"Runway contaminated with 10mm of slush.\"",
+    tip:"Slush is dangerous. It affects braking and takeoff performance."
+  },
+  {
+    word:"Snowbank / Snow drift", emoji:"🏔️", cat:"precip",
+    def:"A large pile of snow pushed together by wind — can block taxiways or runways.",
+    example:"\"Snow drifts reported on taxiway Golf after the blizzard.\"",
+    tip:"Snowbanks are piles of snow. Wind creates drifts."
+  },
+  {
+    word:"Snowflakes", emoji:"❄️", cat:"precip",
+    def:"Individual ice crystals that fall from clouds — the basic unit of snow.",
+    example:"\"Large snowflakes falling — reducing visibility rapidly.\"",
+    tip:"Snowflakes can reduce visibility and cover runways."
+  },
+  {
+    word:"Thunder", emoji:"⚡", cat:"hazard",
+    def:"The loud sound produced by lightning — a sign of a thunderstorm (cumulonimbus) nearby.",
+    example:"\"Thunder reported at the field — all ground operations paused.\"",
+    tip:"Thunder = cumulonimbus nearby. Aviation rule: if you hear thunder, the storm is close."
+  },
+  {
+    word:"Frost", emoji:"🌡️", cat:"temp",
+    def:"A thin layer of ice crystals that forms on cold surfaces when temperature drops below 0°C. Dangerous on aircraft wings.",
+    example:"\"Frost on aircraft surfaces — de-icing required before departure.\"",
+    tip:"Even a thin layer of frost on wings changes aerodynamics."
+  },
+  {
+    word:"Turbulence", emoji:"✈️", cat:"hazard",
+    def:"Irregular, bumpy air movement that causes the aircraft to shake. Can be light, moderate, severe, or extreme.",
+    example:"\"Fasten seatbelts — we are passing through an area of moderate turbulence.\"",
+    tip:"CAT = Clear Air Turbulence (no clouds, near jet streams)."
+  },
+  {
+    word:"Tailwind", emoji:"⬅️", cat:"wind",
+    def:"Wind blowing from behind the aircraft — it increases ground speed but makes landing harder.",
+    example:"\"Maximum tailwind component for landing is 10 knots.\"",
+    tip:"Tailwind = faster in cruise, but more runway needed to land."
+  },
+  {
+    word:"Squall line", emoji:"🌩️", cat:"hazard",
+    def:"A long line of thunderstorms that moves across an area — very dangerous for aircraft.",
+    example:"\"A squall line is approaching from the west. Expect severe turbulence.\"",
+    tip:"Squall lines can extend hundreds of kilometres. Pilots try to fly around them."
+  },
+];
+
+const CAT_LABELS = {
+  wind:"💨 Wind", precip:"🌧️ Precipitation", visibility:"👁️ Visibility",
+  temp:"🌡️ Temperature", hazard:"⚠️ Hazard", cloud:"☁️ Cloud"
+};
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let learned = new Set(JSON.parse(localStorage.getItem('learned')||'[]'));
+let fcIndex = 0;
+let fcOrder = [...Array(WORDS.length).keys()];
+let fcKnown = new Set();
+let fcUnsure = new Set();
+let fcFlipped = false;
+let activeFilter = 'all';
+let quizMode = 'def-to-word';
+let quizQuestions = [];
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+let matchSelected = null;
+let matchType = null;
+let matchMatched = new Set();
+let matchAttempts = 0;
+let matchPairs = [];
+let matchEasyMode = false;
+
+// ══════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  event.target.closest('.tab').classList.add('active');
+  document.getElementById('screen-'+name).classList.add('active');
+  if(name==='flashcards') renderFC();
+  if(name==='matching') { if(!matchPairs.length) newMatchGame(); else renderMatch(); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// GLOSSARY
+// ══════════════════════════════════════════════════════════════
+function buildGlossary() {
+  // Filter pills
+  const pillsEl = document.getElementById('filter-pills');
+  const cats = ['all',...new Set(WORDS.map(w=>w.cat))];
+  pillsEl.innerHTML = cats.map(c=>
+    `<button class="pill${c==='all'?' active':''}" onclick="setFilter('${c}',this)">${c==='all'?'All words':CAT_LABELS[c]||c}</button>`
+  ).join('');
+  renderGlossary();
+}
+
+function setFilter(cat, el) {
+  activeFilter = cat;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderGlossary();
+}
+
+function filterGlossary() { renderGlossary(); }
+
+function renderGlossary() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const grid = document.getElementById('word-grid');
+  const filtered = WORDS.filter(w=>{
+    const matchCat = activeFilter==='all' || w.cat===activeFilter;
+    const matchQ = !q || w.word.toLowerCase().includes(q) || w.def.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+  if(!filtered.length){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="e-icon">🔍</div>No words match your search.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(w=>{
+    const isLearned = learned.has(w.word);
+    return `<div class="word-card${isLearned?' learned':''}" onclick="toggleLearned('${w.word}',this)">
+      <span class="learned-badge">✅</span>
+      <div class="word-header">
+        <div class="word-name">${w.word}</div>
+        <div class="word-emoji">${w.emoji}</div>
+      </div>
+      <span class="word-cat cat-${w.cat}">${CAT_LABELS[w.cat]}</span>
+      <div class="word-def">${w.def}</div>
+      ${w.tip?`<div class="word-example">💡 ${w.tip}</div>`:''}
+    </div>`;
+  }).join('');
+  updateProgress();
+}
+
+function toggleLearned(word, el) {
+  if(learned.has(word)) learned.delete(word);
+  else learned.add(word);
+  el.classList.toggle('learned');
+  localStorage.setItem('learned',JSON.stringify([...learned]));
+  updateProgress();
+}
+
+function updateProgress() {
+  const n = learned.size;
+  document.getElementById('learned-count').textContent = `${n} / ${WORDS.length}`;
+  document.getElementById('progress-fill').style.width = `${(n/WORDS.length)*100}%`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FLASHCARDS
+// ══════════════════════════════════════════════════════════════
+function renderFC() {
+  const w = WORDS[fcOrder[fcIndex]];
+  fcFlipped = false;
+  document.getElementById('fc-card').classList.remove('flipped');
+  document.getElementById('fc-emoji').textContent = w.emoji;
+  document.getElementById('fc-word').textContent = w.word.toUpperCase();
+  const catEl = document.getElementById('fc-cat');
+  catEl.textContent = CAT_LABELS[w.cat];
+  catEl.className = 'fc-cat-label cat-'+w.cat;
+  document.getElementById('fc-def').textContent = w.def;
+  document.getElementById('fc-ex').textContent = w.example;
+  document.getElementById('fc-current').textContent = fcIndex+1;
+  document.getElementById('fc-total').textContent = fcOrder.length;
+  document.getElementById('fc-known').textContent = fcKnown.size;
+  document.getElementById('fc-unsure').textContent = fcUnsure.size;
+}
+
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('fc-card').classList.toggle('flipped',fcFlipped);
+}
+
+function nextCard() {
+  fcIndex = (fcIndex+1)%fcOrder.length;
+  renderFC();
+}
+
+function prevCard() {
+  fcIndex = (fcIndex-1+fcOrder.length)%fcOrder.length;
+  renderFC();
+}
+
+function markCard(know) {
+  const word = WORDS[fcOrder[fcIndex]].word;
+  if(know){ fcKnown.add(word); fcUnsure.delete(word); }
+  else { fcUnsure.add(word); fcKnown.delete(word); }
+  nextCard();
+}
+
+function shuffleCards() {
+  for(let i=fcOrder.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [fcOrder[i],fcOrder[j]]=[fcOrder[j],fcOrder[i]];
+  }
+  fcIndex=0; renderFC();
+}
+
+function resetFC() {
+  fcOrder=[...Array(WORDS.length).keys()];
+  fcKnown.clear(); fcUnsure.clear();
+  fcIndex=0; renderFC();
+}
+
+// ══════════════════════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════════════════════
+function setQuizMode(mode, el) {
+  quizMode = mode;
+  document.querySelectorAll('.quiz-mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function startQuiz(n) {
+  const shuffled = [...WORDS].sort(()=>Math.random()-0.5);
+  quizQuestions = shuffled.slice(0,n).map(w=>buildQuestion(w));
+  quizIndex=0; quizScore=0; quizAnswered=false;
+  document.getElementById('quiz-setup').style.display='none';
+  document.getElementById('quiz-results').style.display='none';
+  document.getElementById('quiz-game').style.display='block';
+  showQuestion();
+}
+
+function buildQuestion(w) {
+  const otherWords = WORDS.filter(x=>x.word!==w.word);
+  const shuffle = arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
+  const wrongs = shuffle(otherWords).slice(0,3);
+  if(quizMode==='word-to-def'){
+    const opts = shuffle([{text:w.def,correct:true},...wrongs.map(x=>({text:x.def,correct:false}))]);
+    return {question:`What is the definition of "${w.word}"?`, emoji:w.emoji, sub:'Choose the correct definition', opts, answer:w.def};
+  } else if(quizMode==='example'){
+    const opts = shuffle([{text:w.word,correct:true},...wrongs.map(x=>({text:x.word,correct:false}))]);
+    return {question:w.example.replace(/"/g,''), emoji:w.emoji, sub:'Which aviation weather word fits this sentence?', opts, answer:w.word};
+  } else {
+    const opts = shuffle([{text:w.word,correct:true},...wrongs.map(x=>({text:x.word,correct:false}))]);
+    return {question:w.def, emoji:w.emoji, sub:'Which word matches this definition?', opts, answer:w.word};
+  }
+}
+
+function showQuestion() {
+  quizAnswered=false;
+  const q = quizQuestions[quizIndex];
+  document.getElementById('quiz-q-label').textContent = `Question ${quizIndex+1} of ${quizQuestions.length}`;
+  document.getElementById('quiz-progress').style.width = `${(quizIndex/quizQuestions.length)*100}%`;
+  document.getElementById('quiz-emoji').textContent = q.emoji;
+  document.getElementById('quiz-text').textContent = q.question;
+  document.getElementById('quiz-sub').textContent = q.sub;
+  document.getElementById('quiz-score').textContent = quizScore;
+  const fb = document.getElementById('quiz-feedback');
+  fb.className='quiz-feedback'; fb.textContent='';
+  document.getElementById('quiz-next-btn').style.display='none';
+  const optsEl = document.getElementById('quiz-options');
+  optsEl.innerHTML = q.opts.map((o,i)=>
+    `<button class="quiz-opt" onclick="answerQuiz(${i})" data-idx="${i}">${o.text}</button>`
+  ).join('');
+}
+
+function answerQuiz(idx) {
+  if(quizAnswered) return;
+  quizAnswered=true;
+  const q = quizQuestions[quizIndex];
+  const correct = q.opts[idx].correct;
+  const btns = document.querySelectorAll('.quiz-opt');
+  btns.forEach(b=>b.disabled=true);
+  btns[idx].classList.add(correct?'correct':'wrong');
+  if(!correct) btns.forEach((b,i)=>{ if(q.opts[i].correct) b.classList.add('correct'); });
+  if(correct) quizScore++;
+  document.getElementById('quiz-score').textContent = quizScore;
+  const fb = document.getElementById('quiz-feedback');
+  fb.className='quiz-feedback show '+(correct?'correct':'wrong');
+  fb.textContent = correct ? `✅ Correct! ${q.answer} — ${WORDS.find(w=>w.word===q.answer||w.def===q.answer)?.def||''}` : `❌ The answer was: ${q.answer}`;
+  document.getElementById('quiz-next-btn').style.display = quizIndex<quizQuestions.length-1 ? 'inline-flex' : 'none';
+  if(quizIndex===quizQuestions.length-1){
+    setTimeout(showResults, 1200);
+  }
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if(quizIndex<quizQuestions.length) showQuestion();
+  else showResults();
+}
+
+function showResults() {
+  document.getElementById('quiz-game').style.display='none';
+  document.getElementById('quiz-results').style.display='block';
+  const total=quizQuestions.length;
+  const pct=Math.round((quizScore/total)*100);
+  document.getElementById('results-score').textContent=`${quizScore}/${total}`;
+  document.getElementById('rb-correct').textContent=quizScore;
+  document.getElementById('rb-wrong').textContent=total-quizScore;
+  let emoji='🌧️', label='Keep practising — review the flashcards!';
+  if(pct>=90){emoji='🏆';label='Excellent! You know your aviation weather vocabulary!';}
+  else if(pct>=70){emoji='⭐';label='Good job! A little more practice and you\'ll be perfect.';}
+  else if(pct>=50){emoji='✈️';label='Not bad! Review the flashcards and try again.';}
+  document.getElementById('results-emoji').textContent=emoji;
+  document.getElementById('results-label').textContent=label;
+}
+
+function resetQuiz() {
+  document.getElementById('quiz-game').style.display='none';
+  document.getElementById('quiz-results').style.display='none';
+  document.getElementById('quiz-setup').style.display='block';
+}
+
+// ══════════════════════════════════════════════════════════════
+// MATCHING GAME
+// ══════════════════════════════════════════════════════════════
+function newMatchGame(easy=false) {
+  matchEasyMode=easy;
+  const n = easy?8:10;
+  const shuffled=[...WORDS].sort(()=>Math.random()-0.5).slice(0,n);
+  matchPairs=shuffled;
+  matchMatched.clear();
+  matchAttempts=0;
+  matchSelected=null;
+  matchType=null;
+  document.getElementById('m-total').textContent=n;
+  renderMatch();
+}
+
+function renderMatch() {
+  const words=[...matchPairs].sort(()=>Math.random()-0.5);
+  const defs=[...matchPairs].sort(()=>Math.random()-0.5);
+  document.getElementById('m-matched').textContent=matchMatched.size;
+  document.getElementById('m-attempts').textContent=matchAttempts;
+
+  document.getElementById('match-words').innerHTML=words.map(w=>
+    `<div class="match-item${matchMatched.has(w.word)?' matched-ok':''}"
+      id="mw-${w.word.replace(/[^a-zA-Z]/g,'')}"
+      onclick="selectMatch('${w.word.replace(/'/g,"\\'")}','word',this)">${w.emoji} ${w.word}</div>`
+  ).join('');
+
+  document.getElementById('match-defs').innerHTML=defs.map(w=>
+    `<div class="match-item${matchMatched.has(w.word)?' matched-ok':''}"
+      id="md-${w.word.replace(/[^a-zA-Z]/g,'')}"
+      onclick="selectMatch('${w.word.replace(/'/g,"\\'")}','def',this)">${w.def.substring(0,70)}${w.def.length>70?'…':''}</div>`
+  ).join('');
+}
+
+function selectMatch(word, type, el) {
+  if(matchMatched.has(word)) return;
+  if(type===matchType && word===matchSelected) {
+    // deselect
+    el.classList.remove('selected-word','selected-def');
+    matchSelected=null; matchType=null; return;
+  }
+  if(!matchSelected) {
+    matchSelected=word; matchType=type;
+    el.classList.add(type==='word'?'selected-word':'selected-def');
+    return;
+  }
+  // second selection
+  if(type===matchType) {
+    // same side — change selection
+    document.querySelectorAll('.match-item').forEach(i=>i.classList.remove('selected-word','selected-def'));
+    matchSelected=word; matchType=type;
+    el.classList.add(type==='word'?'selected-word':'selected-def');
+    return;
+  }
+  // different sides — check match
+  matchAttempts++;
+  document.getElementById('m-attempts').textContent=matchAttempts;
+  const wWord = type==='word'?word:matchSelected;
+  const dWord = type==='def'?word:matchSelected;
+  const wId = 'mw-'+wWord.replace(/[^a-zA-Z]/g,'');
+  const dId = 'md-'+dWord.replace(/[^a-zA-Z]/g,'');
+  if(wWord===dWord){
+    // correct!
+    matchMatched.add(wWord);
+    document.getElementById(wId)?.classList.add('matched-ok');
+    document.getElementById(dId)?.classList.add('matched-ok');
+    document.getElementById('m-matched').textContent=matchMatched.size;
+    if(matchMatched.size===matchPairs.length){
+      setTimeout(()=>alert(`🎉 Excellent! You matched all ${matchPairs.length} pairs in ${matchAttempts} attempts!`),200);
+    }
+  } else {
+    // wrong
+    document.getElementById(wId)?.classList.add('matched-bad');
+    document.getElementById(dId)?.classList.add('matched-bad');
+    setTimeout(()=>{
+      document.getElementById(wId)?.classList.remove('matched-bad','selected-word','selected-def');
+      document.getElementById(dId)?.classList.remove('matched-bad','selected-word','selected-def');
+    },700);
+  }
+  document.querySelectorAll('.match-item').forEach(i=>i.classList.remove('selected-word','selected-def'));
+  matchSelected=null; matchType=null;
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+buildGlossary();
+renderFC();
+</script>
+</body>
+</html>
